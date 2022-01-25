@@ -10,7 +10,9 @@
     "commit": "npx cz"
   },
   "dependencies": {
+    "axios": "^0.25.0",
     "core-js": "^3.6.5",
+    "element-plus": "^1.3.0-beta.8",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
@@ -37,7 +39,9 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "prettier": "^2.5.1",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.5",
+    "unplugin-auto-import": "^0.5.11",
+    "unplugin-vue-components": "^0.17.14"
   },
   "config": {
     "commitizen": {
