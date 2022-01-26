@@ -1,8 +1,9 @@
+import { BASE_URL, TIME_OUT } from './config'
 import TWRequest from './request'
 
 const twRequest = new TWRequest({
-  baseURL: 'https://httpbin.org/',
-  timeout: 3000,
+  baseURL: BASE_URL,
+  timeout: TIME_OUT,
   interceptors: {
     requestInterceptors(config) {
       console.log('请求拦截')

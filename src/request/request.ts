@@ -1,12 +1,18 @@
+import { ElLoading } from 'element-plus'
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { TWInterceptors, TWRequestConfig } from './type'
+
+const DEFAULT_LOADING = true
 
 class TWRequest {
   instance: AxiosInstance
   interceptors?: TWInterceptors
+  showLoading: boolean
+  loading?: any
   constructor(config: TWRequestConfig) {
     this.instance = axios.create(config)
     this.interceptors = config.interceptors
+    this.showLoading = config.showLoading ?? DEFAULT_LOADING
 
     // 1.初始化创建实例的拦截器
     this.instance.interceptors.request.use(
@@ -18,11 +24,18 @@ class TWRequest {
       this.interceptors?.responseInterceptors,
       this.interceptors?.requestInterceptorsCatch
     )
-
     // 2.添加默认拦截器
     this.instance.interceptors.request.use(
       (config: AxiosRequestConfig) => {
         console.log('默认请求拦截')
+        if (this.showLoading) {
+          // 加入loading
+          this.loading = ElLoading.service({
+            lock: true,
+            text: '正在请求数据',
+            background: 'rgba(0,0,0,0.5)'
+          })
+        }
         return config
       },
       (err) => {
@@ -32,26 +45,48 @@ class TWRequest {
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
         console.log('默认响应拦截')
-        return res.data
+        if (res.data.returnCode === '-1001') {
+          console.log('请求失败')
+          // 将loading移除
+          this.loading?.close()
+        } else {
+          this.loading?.close()
+          return res.data
+        }
       },
       (err) => {
+        if (err.response.status === 404) {
+          console.log('404错误')
+        }
+        this.loading?.close()
         console.log(err)
       }
     )
   }
 
-  request(config: TWRequestConfig): Promise<any> {
+  request<T>(config: TWRequestConfig<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       // 如果在请求的时候使用了独立的拦截器
       if (config.interceptors?.requestInterceptors) {
         config = config.interceptors?.requestInterceptors(config)
       }
-      this.instance.request(config).then((res) => {
-        if (config.interceptors?.responseInterceptors) {
-          res = config.interceptors.responseInterceptors(res)
-        }
-        resolve(res)
-      })
+      if (config.showLoading === false) {
+        this.showLoading = false
+      }
+      this.instance
+        .request<any, T>(config)
+        .then((res) => {
+          if (config.interceptors?.responseInterceptors) {
+            res = config.interceptors.responseInterceptors(res)
+          }
+          resolve(res)
+          // 将showLoading设置为true 这样不会影响下一次请求
+          this.showLoading = DEFAULT_LOADING
+        })
+        .catch((err) => {
+          this.showLoading = DEFAULT_LOADING
+          reject(err)
+        })
     })
   }
 }

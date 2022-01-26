@@ -1,12 +1,13 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-export interface TWRequestConfig extends AxiosRequestConfig {
-  interceptors?: TWInterceptors
+export interface TWRequestConfig<T = AxiosResponse> extends AxiosRequestConfig {
+  interceptors?: TWInterceptors<T>
+  showLoading?: boolean
 }
 
-export interface TWInterceptors {
+export interface TWInterceptors<T = AxiosResponse> {
   requestInterceptors?: (config: AxiosRequestConfig) => AxiosRequestConfig
   requestInterceptorsCatch?: (err: AxiosRequestConfig) => void
-  responseInterceptors?: (res: AxiosResponse) => AxiosResponse
+  responseInterceptors?: (res: T) => T
   responseInterceptorsCatch?: (err: AxiosResponse) => void
 }
