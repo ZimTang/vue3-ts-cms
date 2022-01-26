@@ -89,6 +89,22 @@ class TWRequest {
         })
     })
   }
+
+  get<T>(config: TWRequestConfig<T>): Promise<T> {
+    return this.instance.request({ ...config, method: 'GET' })
+  }
+
+  post<T>(config: TWRequestConfig<T>): Promise<T> {
+    return this.instance.request({ ...config, method: 'POST' })
+  }
+
+  delete<T>(config: TWRequestConfig<T>): Promise<T> {
+    return this.instance.request({ ...config, method: 'DELETE' })
+  }
+
+  put<T>(config: TWRequestConfig<T>): Promise<T> {
+    return this.instance.request({ ...config, method: 'PUT' })
+  }
 }
 
 export default TWRequest
