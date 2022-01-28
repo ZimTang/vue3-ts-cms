@@ -27,7 +27,6 @@ class TWRequest {
     // 2.添加默认拦截器
     this.instance.interceptors.request.use(
       (config: AxiosRequestConfig) => {
-        console.log('默认请求拦截')
         if (this.showLoading) {
           // 加入loading
           this.loading = ElLoading.service({
@@ -44,9 +43,7 @@ class TWRequest {
     )
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
-        console.log('默认响应拦截')
         if (res.data.returnCode === '-1001') {
-          console.log('请求失败')
           // 将loading移除
           this.loading?.close()
         } else {
