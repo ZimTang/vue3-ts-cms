@@ -9,6 +9,7 @@ import {
 import { IAccount } from '@/request/login/types'
 import localCache from '@/util/cache'
 import router from '@/router'
+import { mapMenus } from '@/util/map-menus'
 
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
@@ -20,25 +21,32 @@ const loginModule: Module<ILoginState, IRootState> = {
   actions: {
     async accountLoginAction({ commit }, payload: IAccount) {
       // 实现登录
-      const loginResult = await accountLoginRequest(payload)
-      const { id, token } = loginResult.data
-      commit('changeToken', token)
-      localCache.setCache('token', token)
-
-      // 请求用户信息
-      const userInfoResult = await requestUserInfoById(id)
-      const userInfo = userInfoResult.data
-      commit('changeUserInfo', userInfo)
-      localCache.setCache('userInfo', userInfo)
-
-      // 用户菜单
-      const userMenusResult = await requestUserMenuByRoleId(userInfo.role.id)
-      const userMenus = userMenusResult.data
-      commit('changeUserMenus', userMenus)
-      localCache.setCache('userMenus', userMenus)
-
-      // 跳转到首页
-      router.push('/main')
+      accountLoginRequest(payload)
+        .then((loginResult) => {
+          console.log(loginResult.data)
+          const { id, token } = loginResult.data
+          commit('changeToken', token)
+          localCache.setCache('token', token)
+          // 请求用户信息
+          return requestUserInfoById(id)
+        })
+        .then(async (userInfoResult) => {
+          const userInfo = userInfoResult.data
+          commit('changeUserInfo', userInfo)
+          localCache.setCache('userInfo', userInfo)
+          // 用户菜单
+          return requestUserMenuByRoleId(userInfo.role.id)
+        })
+        .then((userMenusResult) => {
+          const userMenus = userMenusResult.data
+          commit('changeUserMenus', userMenus)
+          localCache.setCache('userMenus', userMenus)
+          // 跳转到首页
+          router.push('/main')
+        })
+        .catch((err) => {
+          console.log(123)
+        })
     },
     phoneLoginAction({ commit }, payload: any) {
       console.log('执行phoneLoginAction')
@@ -54,7 +62,7 @@ const loginModule: Module<ILoginState, IRootState> = {
         commit('changeUserInfo', userInfo)
       }
 
-      const userMenu = localCache.getCache('token')
+      const userMenu = localCache.getCache('userMenus')
       if (userMenu) {
         commit('changeUserMenus', userMenu)
       }
@@ -69,6 +77,13 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     changeUserMenus(state, userMenus: any) {
       state.userMenus = userMenus
+
+      const routes = mapMenus(userMenus)
+      // 将routes添加到main的children中
+      routes.forEach((route) => {
+        router.addRoute('main', route)
+      })
+      console.log(router.getRoutes())
     }
   }
 }

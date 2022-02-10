@@ -1,4 +1,4 @@
-import { ElLoading } from 'element-plus'
+import { ElLoading, ElMessage } from 'element-plus'
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { TWInterceptors, TWRequestConfig } from './type'
 
@@ -43,6 +43,14 @@ class TWRequest {
     )
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
+        if (res === undefined) {
+          this.loading?.close()
+          ElMessage({
+            message: '请求失败',
+            type: 'error'
+          })
+          return undefined
+        }
         if (res.data.returnCode === '-1001') {
           // 将loading移除
           this.loading?.close()
@@ -56,7 +64,6 @@ class TWRequest {
           console.log('404错误')
         }
         this.loading?.close()
-        console.log(err)
       }
     )
   }

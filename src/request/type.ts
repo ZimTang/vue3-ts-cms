@@ -11,3 +11,8 @@ export interface TWInterceptors<T = AxiosResponse> {
   responseInterceptors?: (res: T) => T
   responseInterceptorsCatch?: (err: AxiosResponse) => void
 }
+
+export interface IDataType<T = any> {
+  code: number
+  data: T
+}
