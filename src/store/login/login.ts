@@ -9,14 +9,15 @@ import {
 import { IAccount } from '@/request/login/types'
 import localCache from '@/util/cache'
 import router from '@/router'
-import { mapMenus } from '@/util/map-menus'
+import { mapMenus, mapMenusToPermission } from '@/util/map-menus'
 
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
   state: {
     token: '',
     userInfo: {},
-    userMenus: []
+    userMenus: [],
+    permissions: []
   },
   actions: {
     async accountLoginAction({ commit }, payload: IAccount) {
@@ -83,7 +84,10 @@ const loginModule: Module<ILoginState, IRootState> = {
       routes.forEach((route) => {
         router.addRoute('main', route)
       })
-      console.log(router.getRoutes())
+
+      //  获取用户按钮权限
+      const permissions = mapMenusToPermission(userMenus)
+      state.permissions = permissions
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tw-form">
     <slot name="header"> </slot>
     <el-form>
       <el-row>
@@ -101,4 +101,8 @@ export default defineComponent({
 })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.tw-form {
+  padding-top: 10px;
+}
+</style>

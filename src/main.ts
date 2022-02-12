@@ -6,7 +6,7 @@ import { setupStore } from '@/store/index'
 import 'normalize.css'
 import './assets/css/index.less'
 import 'element-plus/dist/index.css'
-import * as ElIcons from '@element-plus/icons-vue'
+import { globalRegister } from '@/global'
 
 const app = createApp(App)
 
@@ -17,6 +17,4 @@ setupStore()
 app.use(router)
 app.mount('#app')
 
-for (const name in ElIcons) {
-  app.component(name, (ElIcons as any)[name])
-}
+app.use(globalRegister)

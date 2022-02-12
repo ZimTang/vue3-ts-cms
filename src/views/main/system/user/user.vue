@@ -1,48 +1,47 @@
 <template>
   <div>
-    <tw-form v-bind="searchFormConfig" v-model="formData">
-      <template #header>
-        <h2>高级检索</h2>
-      </template>
-      <template #footer>
-        <el-button type="primary">重置</el-button>
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-      </template>
-    </tw-form>
+    <page-search
+      :searchFormConfig="searchFormConfig"
+      @resetBtnClick="handleResetBtnClick"
+      @queryBtnClick="handleQueryBtnClick"
+    ></page-search>
+    <page-content
+      :contentConfig="contentConfig"
+      page-name="users"
+      title="用户列表"
+      ref="pageContentRef"
+    ></page-content>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { searchFormConfig } from './config/search.config'
-import { TwForm } from '@/base-ui/form'
-import { useStore } from '@/store'
+import { contentConfig } from '@/views/main/system/user/config/content.config'
+import { pageSearch } from '@/components/page-search'
+import { pageContent } from '@/components/page-content'
+import { usePageSearch } from '@/hooks/use-page-search'
 export default defineComponent({
-  setup() {
-    const store = useStore()
-    const formData = ref({
-      id: '',
-      username: '',
-      password: '',
-      sports: '',
-      date: ''
-    })
-
-    const handleSearch = () => {
-      store.dispatch('system/getListAction', {
-        url: '/users/list',
-        queryInfo: {
-          offset: 0,
-          size: 10
-        }
-      })
-    }
-    return { searchFormConfig, formData, handleSearch }
-  },
   components: {
-    TwForm
+    pageSearch,
+    pageContent
+  },
+  setup() {
+    const { pageContentRef, handleResetBtnClick, handleQueryBtnClick } =
+      usePageSearch()
+    return {
+      searchFormConfig,
+      contentConfig,
+      pageContentRef,
+      handleResetBtnClick,
+      handleQueryBtnClick
+    }
   }
 })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.table {
+  margin-top: 20px;
+}
+</style>
