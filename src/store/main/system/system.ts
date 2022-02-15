@@ -1,4 +1,9 @@
-import { getSearchList } from '@/request/main/system/system'
+import {
+  createPageData,
+  deletePageData,
+  editPageData,
+  getSearchList
+} from '@/request/main/system/system'
 import { IRootState } from '@/store/types'
 import { Module } from 'vuex'
 import { ISystemState } from './types'
@@ -46,6 +51,45 @@ const SystemModule: Module<ISystemState, IRootState> = {
         `change${pageName.charAt(0).toUpperCase() + pageName.slice(1)}Count`,
         totalCount
       )
+    },
+    async deletePageDataAction({ dispatch }, payload: any) {
+      const { pageName, id } = payload
+      const url = `/${pageName}/${id}`
+      // 调用删除的网络请求
+      await deletePageData(url)
+      dispatch('getListAction', {
+        pageName,
+        queryInfo: {
+          offset: 0,
+          size: 10
+        }
+      })
+    },
+
+    async createPageAction({ dispatch }, payload: any) {
+      const { pageName, newData } = payload
+      const url = `/${pageName}`
+      await createPageData(url, newData)
+      dispatch('getListAction', {
+        pageName,
+        queryInfo: {
+          offset: 0,
+          size: 10
+        }
+      })
+    },
+
+    async editPageAction({ dispatch }, payload: any) {
+      const { pageName, editData, id } = payload
+      const url = `/${pageName}/${id}`
+      await editPageData(url, editData)
+      dispatch('getListAction', {
+        pageName,
+        queryInfo: {
+          offset: 0,
+          size: 10
+        }
+      })
     }
   },
   getters: {

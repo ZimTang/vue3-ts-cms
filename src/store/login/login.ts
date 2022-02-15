@@ -20,7 +20,7 @@ const loginModule: Module<ILoginState, IRootState> = {
     permissions: []
   },
   actions: {
-    async accountLoginAction({ commit }, payload: IAccount) {
+    async accountLoginAction({ commit, dispatch }, payload: IAccount) {
       // 实现登录
       accountLoginRequest(payload)
         .then((loginResult) => {
@@ -28,6 +28,7 @@ const loginModule: Module<ILoginState, IRootState> = {
           const { id, token } = loginResult.data
           commit('changeToken', token)
           localCache.setCache('token', token)
+          dispatch('getDepartmentList', null, { root: true })
           // 请求用户信息
           return requestUserInfoById(id)
         })
@@ -51,12 +52,12 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     phoneLoginAction({ commit }, payload: any) {
       console.log('执行phoneLoginAction')
-      console.log(payload)
     },
-    loadLocalLogin({ commit }) {
+    loadLocalLogin({ commit, dispatch }) {
       const token = localCache.getCache('token')
       if (token) {
         commit('changeToken', token)
+        dispatch('getDepartmentList', null, { root: true })
       }
       const userInfo = localCache.getCache('userInfo')
       if (token) {

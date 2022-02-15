@@ -7,3 +7,23 @@ export function getSearchList(url: string, queryInfo: any) {
     data: queryInfo
   })
 }
+
+export function deletePageData(url: string) {
+  return twRequest.delete<IDataType>({
+    url
+  })
+}
+
+export function createPageData(url: string, newData: any) {
+  return twRequest.post<IDataType>({
+    url,
+    data: newData
+  })
+}
+
+export function editPageData(url: string, editData: any) {
+  return twRequest.patch<IDataType>({
+    url,
+    data: editData
+  })
+}

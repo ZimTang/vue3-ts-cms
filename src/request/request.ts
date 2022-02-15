@@ -109,6 +109,10 @@ class TWRequest {
   put<T>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'PUT' })
   }
+
+  patch<T>(config: TWRequestConfig<T>): Promise<T> {
+    return this.instance.request({ ...config, method: 'PATCH' })
+  }
 }
 
 export default TWRequest

@@ -11,7 +11,9 @@
       <span>{{ title }}</span>
     </template>
     <template #header-handler>
-      <el-button type="primary" v-if="isCreate">新建用户</el-button>
+      <el-button type="primary" v-if="isCreate" @click="handleCreate"
+        >新建用户</el-button
+      >
     </template>
     <template #status="slotProps">
       <el-button
@@ -27,10 +29,22 @@
     <template #updateAt="slotProps">
       {{ $filters.formatTime(slotProps.row.updateAt) }}
     </template>
-    <template #handler>
+    <template #handler="slotProps">
       <div>
-        <el-button type="primary" size="small" v-if="isUpdate">编辑</el-button>
-        <el-button type="danger" size="small" v-if="isDelete">删除</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          v-if="isUpdate"
+          @click="handleEdit(slotProps.row)"
+          >编辑</el-button
+        >
+        <el-button
+          type="danger"
+          size="small"
+          v-if="isDelete"
+          @click="handleDelete(slotProps.row)"
+          >删除</el-button
+        >
       </div>
     </template>
     <!--    在pageContent中 动态插入剩余插槽-->
@@ -71,10 +85,9 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  emits: ['handleEdit', 'handleCreate'],
+  setup(props, { emit }) {
     const store = useStore()
-    console.log(store.state.login.permissions)
-    console.log(props.pageName)
     //获取操作的权限
     const isCreate = usePermission(props.pageName, 'create')
     const isDelete = usePermission(props.pageName, 'delete')
@@ -122,6 +135,21 @@ export default defineComponent({
       if (item.slotName === 'handler') return false
       return true
     })
+
+    const handleDelete = (item: any) => {
+      store.dispatch('system/deletePageDataAction', {
+        pageName: props.pageName,
+        id: item.id
+      })
+    }
+
+    const handleEdit = (item: any) => {
+      emit('handleEdit', item)
+    }
+
+    const handleCreate = () => {
+      emit('handleCreate')
+    }
     return {
       pageInfo,
       getPageData,
@@ -132,7 +160,10 @@ export default defineComponent({
       isCreate,
       isDelete,
       isUpdate,
-      isQuery
+      isQuery,
+      handleDelete,
+      handleEdit,
+      handleCreate
     }
   }
 })

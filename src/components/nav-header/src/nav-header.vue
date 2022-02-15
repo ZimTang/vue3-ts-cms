@@ -14,7 +14,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>退出登录</el-dropdown-item>
+              <el-dropdown-item @click="handleExitClick"
+                >退出登录</el-dropdown-item
+              >
               <el-dropdown-item divided>用户信息</el-dropdown-item>
               <el-dropdown-item>系统管理</el-dropdown-item>
             </el-dropdown-menu>
@@ -29,21 +31,29 @@
 import { defineComponent, ref } from 'vue'
 import { useStore } from '@/store/index'
 import { TwBreadcrumb } from '@/base-ui/breadcrumb'
+import localCache from '@/util/cache'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   emits: ['foldChange'],
   setup(props, { emit }) {
     const store = useStore()
+    const router = useRouter()
     const isFold = ref(true)
     const changeFold = () => {
       isFold.value = !isFold.value
       emit('foldChange', isFold.value)
     }
     const name = ref<string>(store.state.login.userInfo.name)
+    const handleExitClick = () => {
+      localCache.deleteCache('token')
+      router.push('/main')
+    }
     return {
       isFold,
       changeFold,
-      name
+      name,
+      handleExitClick
     }
   },
   components: {
