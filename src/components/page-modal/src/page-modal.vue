@@ -2,12 +2,13 @@
   <div>
     <el-dialog
       v-model="dialogVisible"
-      title="Warning"
+      title="新建用户"
       width="30%"
       center
       destroy-on-close
     >
       <tw-form v-bind="modalConfig" v-model="formData"></tw-form>
+      <slot></slot>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
@@ -18,7 +19,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
 import { TwForm } from '@/base-ui/form'
 import { useStore } from '@/store'
@@ -35,6 +36,10 @@ export default defineComponent({
     pageName: {
       type: String,
       required: true
+    },
+    otherInfo: {
+      type: Object,
+      default: () => ({})
     }
   },
   components: {
@@ -43,7 +48,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
     const dialogVisible = ref(false)
-    const formData = ref({})
+    const formData = ref<any>({})
     watch(
       () => props.defaultInfo,
       (newValue) => {
@@ -59,13 +64,13 @@ export default defineComponent({
       if (Object.keys(props.defaultInfo).length) {
         store.dispatch('system/editPageAction', {
           pageName: props.pageName,
-          editData: { ...formData.value },
+          editData: { ...formData.value, ...props.otherInfo },
           id: props.defaultInfo.id
         })
       } else {
         store.dispatch('system/createPageAction', {
           pageName: props.pageName,
-          newData: { ...formData.value }
+          newData: { ...formData.value, ...props.otherInfo }
         })
       }
     }

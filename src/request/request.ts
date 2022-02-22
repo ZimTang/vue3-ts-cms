@@ -94,23 +94,23 @@ class TWRequest {
     })
   }
 
-  get<T>(config: TWRequestConfig<T>): Promise<T> {
+  get<T = any>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'GET' })
   }
 
-  post<T>(config: TWRequestConfig<T>): Promise<T> {
+  post<T = any>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'POST' })
   }
 
-  delete<T>(config: TWRequestConfig<T>): Promise<T> {
+  delete<T = any>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'DELETE' })
   }
 
-  put<T>(config: TWRequestConfig<T>): Promise<T> {
+  put<T = any>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'PUT' })
   }
 
-  patch<T>(config: TWRequestConfig<T>): Promise<T> {
+  patch<T = any>(config: TWRequestConfig<T>): Promise<T> {
     return this.instance.request({ ...config, method: 'PATCH' })
   }
 }

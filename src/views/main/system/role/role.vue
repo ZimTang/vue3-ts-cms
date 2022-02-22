@@ -5,6 +5,7 @@
       :contentConfig="contentConfig"
       page-name="role"
       title="角色列表"
+      actionTitle="新建角色"
       @handleEdit="handleEdit"
       @handleCreate="handleCreate"
     ></page-content>
@@ -13,12 +14,22 @@
       :defaultInfo="defaultInfo"
       :modalConfig="modalConfig"
       pageName="role"
-    ></page-modal>
+      :otherInfo="otherInfo"
+    >
+      <el-tree
+        ref="elTreeRef"
+        :data="menus"
+        show-checkbox
+        node-key="id"
+        @check="handleCheckChange"
+        :props="{ children: 'children', label: 'name' }"
+      />
+    </page-modal>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref, nextTick } from 'vue'
 import { searchFormConfig } from '@/views/main/system/role/config/search.config'
 import { contentConfig } from '@/views/main/system/role/config/content.config'
 import { modalConfig } from '@/views/main/system/role/config/modal.config'
@@ -26,6 +37,9 @@ import { pageModal } from '@/components/page-modal'
 import { pageSearch } from '@/components/page-search'
 import { pageContent } from '@/components/page-content'
 import { usePageModal } from '@/hooks/use-page-modal'
+import { useStore } from '@/store'
+import { menuMapLeafKeys } from '@/util/map-menus'
+import { ElTree } from 'element-plus'
 
 export default defineComponent({
   components: {
@@ -35,8 +49,25 @@ export default defineComponent({
   },
 
   setup() {
+    const store = useStore()
+    const menus = computed(() => store.state.entireMenu)
+    const elTreeRef = ref<InstanceType<typeof ElTree>>()
+    const editCallback = (item: any) => {
+      const leafKeys = menuMapLeafKeys(item.menuList)
+      nextTick(() => {
+        elTreeRef.value?.setCheckedKeys(leafKeys, false)
+      })
+    }
     const { pageModalRef, defaultInfo, handleEdit, handleCreate } =
-      usePageModal()
+      usePageModal(undefined, editCallback)
+
+    const otherInfo = ref<any>({})
+    const handleCheckChange = (data1: any, data2: any) => {
+      const checkedKeys = data2.checkedKeys
+      const halfCheckedKeys = data2.halfCheckedKeys
+      const menuList = [...checkedKeys, ...halfCheckedKeys]
+      otherInfo.value = { menuList }
+    }
     return {
       searchFormConfig,
       contentConfig,
@@ -44,7 +75,11 @@ export default defineComponent({
       pageModalRef,
       defaultInfo,
       handleEdit,
-      handleCreate
+      handleCreate,
+      menus,
+      otherInfo,
+      handleCheckChange,
+      elTreeRef
     }
   }
 })

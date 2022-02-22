@@ -11,8 +11,11 @@
       <span>{{ title }}</span>
     </template>
     <template #header-handler>
-      <el-button type="primary" v-if="isCreate" @click="handleCreate"
-        >新建用户</el-button
+      <el-button
+        type="primary"
+        v-if="actionTitle && isCreate"
+        @click="handleCreate"
+        >{{ actionTitle }}</el-button
       >
     </template>
     <template #status="slotProps">
@@ -72,6 +75,10 @@ export default defineComponent({
     TwTable
   },
   props: {
+    actionTitle: {
+      type: String,
+      default: ''
+    },
     contentConfig: {
       type: Object,
       required: true

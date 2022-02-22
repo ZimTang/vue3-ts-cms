@@ -2,6 +2,7 @@ import { createStore, Store, useStore as useVuexStore } from 'vuex'
 import { IRootState, IStoreType } from './types'
 import login from './login/login'
 import system from './main/system/system'
+import dashboard from './main/analysis/dashboard'
 import { getSearchList } from '@/request/main/system/system'
 
 const store = createStore<IRootState>({
@@ -9,7 +10,8 @@ const store = createStore<IRootState>({
     name: '123',
     age: 123,
     entireDepartment: [],
-    entireRole: []
+    entireRole: [],
+    entireMenu: []
   },
   mutations: {
     changeEntireDepartment(state, payload) {
@@ -17,6 +19,9 @@ const store = createStore<IRootState>({
     },
     changeEntireRole(state, payload) {
       state.entireRole = payload
+    },
+    changeEntireMenu(state, payload) {
+      state.entireMenu = payload
     }
   },
   actions: {
@@ -35,11 +40,16 @@ const store = createStore<IRootState>({
         size: 1000
       })
 
+      const {
+        data: { list: menuList }
+      } = await getSearchList('/menu/list', {})
+
       commit('changeEntireDepartment', departmentList)
       commit('changeEntireRole', roleList)
+      commit('changeEntireMenu', menuList)
     }
   },
-  modules: { login, system }
+  modules: { login, system, dashboard }
 })
 
 export function setupStore() {

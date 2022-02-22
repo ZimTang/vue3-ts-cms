@@ -9,6 +9,7 @@
       :contentConfig="contentConfig"
       page-name="users"
       title="用户列表"
+      actionTitle="新建用户"
       ref="pageContentRef"
       @handleCreate="handleCreate"
       @handleEdit="handleEdit"
